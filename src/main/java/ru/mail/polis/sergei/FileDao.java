@@ -28,11 +28,10 @@ public class FileDao  implements KVDao {
     public byte[] get(@NotNull byte[] key) throws NoSuchElementException, IOException {
         final File file = from(key);
         if (file.exists()){
-            Files.readAllBytes(file.toPath());
+            return Files.readAllBytes(file.toPath());
         }else{
             throw new NoSuchElementException();
         }
-        return new byte[0];
     }
 
     @Override
