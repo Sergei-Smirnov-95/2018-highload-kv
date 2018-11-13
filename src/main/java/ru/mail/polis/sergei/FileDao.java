@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.NoSuchElementException;
 
-public class FileDao  implements KVDao {
+public class FileDao implements KVDao {
     @NotNull
     private final File base;
 

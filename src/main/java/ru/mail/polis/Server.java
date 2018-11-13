@@ -16,6 +16,8 @@
 
 package ru.mail.polis;
 
+import org.rocksdb.RocksDB;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -34,7 +36,6 @@ public final class Server {
     public static void main(String[] args) throws IOException {
         // Temporary storage in the file system
         final File data = Files.createTempDirectory();
-
         // Start the storage
         final KVDao dao = KVDaoFactory.create(data);
         final KVService storage = KVServiceFactory.create(PORT, dao);

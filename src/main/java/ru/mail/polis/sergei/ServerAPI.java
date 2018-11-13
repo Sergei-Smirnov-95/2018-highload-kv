@@ -75,3 +75,4 @@ public class ServerAPI extends HttpServer implements KVService {
     }
 
 }
+/*важно делать атомарные операции, чтобы работало параллельно*/

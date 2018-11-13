@@ -16,6 +16,10 @@ dependencies {
 
     //nio
     compile("ru.odnoklassniki:one-nio:1.0.2")
+
+    //rocksdb
+    compile("org.rocksdb:rocksdbjni:5.4.5")//3.10.1,5.3.6,5.4.5
+
     // JUnit 5
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")

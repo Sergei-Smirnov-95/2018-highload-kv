@@ -18,6 +18,7 @@ package ru.mail.polis;
 
 import org.jetbrains.annotations.NotNull;
 import ru.mail.polis.sergei.FileDao;
+import ru.mail.polis.sergei.RocksDBDao;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.io.IOException;
  * @author Vadim Tsesko <incubos@yandex.com>
  */
 final class KVDaoFactory {
-    private static final long MAX_HEAP = 128 * 1024 * 1024;
+    private static final long MAX_HEAP = 1 *1024 * 1024 * 1024;//128*1024*1024
 
     private KVDaoFactory() {
         // Not instantiatable
@@ -41,7 +42,7 @@ final class KVDaoFactory {
      * @return a storage instance
      */
     @NotNull
-    static KVDao create(@NotNull final File data) {
+    static KVDao create(@NotNull final File data) {//@NotNull final File data
         if (Runtime.getRuntime().maxMemory() > MAX_HEAP) {
             throw new IllegalStateException("The heap is too big. Consider setting Xmx.");
         }
@@ -54,6 +55,7 @@ final class KVDaoFactory {
             throw new IllegalArgumentException("Path is not a directory: " + data);
         }
 
-        return new FileDao(data);
+        //return new FileDao(data);
+        return new RocksDBDao(data);
     }
 }
