@@ -29,7 +29,7 @@ import java.io.IOException;
  * @author Vadim Tsesko <incubos@yandex.com>
  */
 final class KVDaoFactory {
-    private static final long MAX_HEAP = 1 *1024 * 1024 * 1024;//128*1024*1024
+    private static final long MAX_HEAP = 128 * 1024 * 1024;
 
     private KVDaoFactory() {
         // Not instantiatable
@@ -42,7 +42,7 @@ final class KVDaoFactory {
      * @return a storage instance
      */
     @NotNull
-    static KVDao create(@NotNull final File data) throws IOException{
+    static KVDao create(@NotNull final File data) throws IOException {
         if (Runtime.getRuntime().maxMemory() > MAX_HEAP) {
             throw new IllegalStateException("The heap is too big. Consider setting Xmx.");
         }
