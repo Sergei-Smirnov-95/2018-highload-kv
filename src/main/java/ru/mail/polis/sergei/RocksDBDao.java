@@ -2,9 +2,10 @@ package ru.mail.polis.sergei;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.rocksdb.FlushOptions;
 import org.rocksdb.RocksDBException;
 import ru.mail.polis.KVDao;
-
+import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -13,43 +14,46 @@ import org.rocksdb.RocksDB;
 import org.rocksdb.Options;
 
 public class RocksDBDao implements KVDao {
-    //@NotNull
-    private RocksDB db;
+    @NotNull
+    private final RocksDB db;
+    @NotNull
+    private final Logger logger;
 
-    public RocksDBDao(@NotNull final File folder_path){
+    public RocksDBDao(@NotNull final File folder_path) throws IOException{
 
-    //load the RocksDB C++ library.
-     RocksDB.loadLibrary();
+        this.logger = Logger.getLogger(RocksDBDao.class);
+        RocksDB.loadLibrary();
+        logger.debug("RocksDB library loaded");
+        try {
+            Options options = new Options();
+            options.setCreateIfMissing(true);
+            options.setAllowMmapWrites(false);
+            options.setAllowMmapReads(true);
+            options.setMaxOpenFiles(-1);
+            this.db = RocksDB.open(options, folder_path.getAbsolutePath());
+        } catch (RocksDBException ex) {
 
-    // the Options class contains a set of configurable DB options
-    // that determines the behaviour of the database.
-    try (final Options options = new Options().setCreateIfMissing(true)) {
-
-        // a factory method that returns a RocksDB instance
-        try (final RocksDB db = RocksDB.open(options, folder_path.getPath())) {
-            this.db= db;
-            /*db.put("key".getBytes(),"value".getBytes());
-            byte[] val=db.get("key".getBytes());
-            System.out.println(new String(val));*/
+            throw new IOException(ex);
         }
-    } catch (RocksDBException e) {
-        System.out.println("error db"+e);
-    }
 
     }
     @NotNull
     @Override
     public byte[] get(@NotNull byte[] key) throws NoSuchElementException{
-        final byte[] value =new byte[10000];
+        final byte[] value =new byte[1024];
         try {
+
             int err = db.get(key,value);
             if(err == RocksDB.NOT_FOUND)
             {
                 throw new NoSuchElementException();
             }
+            if (err == 0){
+                return new byte[0];
+            }
             return value;
         } catch (RocksDBException ex){
-            System.out.println("error with RocksDB"+ex);
+            logger.error("RocksDB error in get method"+ex);
             throw new NoSuchElementException();
         }
     }
@@ -61,7 +65,8 @@ public class RocksDBDao implements KVDao {
         }
         catch (RocksDBException ex)
         {
-            System.out.println("error rocksdb"+ex);
+            logger.error("RocksDB error in upsert method"+ex);
+            throw new IOException("RocksDB error in upsert method"+ex);
         }
 
     }
@@ -69,16 +74,24 @@ public class RocksDBDao implements KVDao {
     @Override
     public void remove(@NotNull byte[] key) throws IOException {
     try{
-        db.delete(key);//remove(key);
+        db.singleDelete(key);
     }
         catch (RocksDBException ex)
     {
-        throw  new IOException("Rocksdb failed");
+        logger.error("RocksDB error in remove method"+ex);
+        throw  new IOException("Rocksdb failed on remove");
     }
     }
 
     @Override
     public void close() throws IOException {
+        try {
+            db.flush(new FlushOptions());
+        } catch (RocksDBException e) {
+            logger.error("RocksDB error in close method"+e);
+            throw new IOException("Failed to flush db",e);
+        }
         db.close();
+        logger.debug("RocksDB was closed");
     }
 }

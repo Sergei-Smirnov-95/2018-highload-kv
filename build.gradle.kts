@@ -10,6 +10,10 @@ repositories {
     jcenter()
 }
 
+val loggingDependencies = listOf(
+        "org.slf4j:slf4j-api:1.7.25",
+        "org.apache.logging.log4j:*:2.11.1")
+
 dependencies {
     // Annotations for better code documentation
     compile("com.intellij:annotations:12.0")
@@ -17,8 +21,11 @@ dependencies {
     //nio
     compile("ru.odnoklassniki:one-nio:1.0.2")
 
-    //rocksdb
-    compile("org.rocksdb:rocksdbjni:5.4.5")//3.10.1,5.3.6,5.4.5
+    //RocksDB
+    compile("org.rocksdb:rocksdbjni:5.4.5")
+
+    //log4j
+    loggingDependencies.map { compile(it) }
 
     // JUnit 5
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
