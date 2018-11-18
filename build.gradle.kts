@@ -12,7 +12,10 @@ repositories {
 
 val loggingDependencies = listOf(
         "org.slf4j:slf4j-api:1.7.25",
-        "org.apache.logging.log4j:*:2.11.1")
+        "org.apache.logging.log4j:log4j-api:2.11.1",
+        "org.apache.logging.log4j:log4j-1.2-api:2.11.1",
+        "org.apache.logging.log4j:log4j-slf4j-impl:2.11.1",
+        "org.apache.logging.log4j:log4j-core:2.11.1")
 
 dependencies {
     // Annotations for better code documentation
