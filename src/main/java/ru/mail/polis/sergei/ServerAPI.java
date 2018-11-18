@@ -27,44 +27,51 @@ public class ServerAPI extends HttpServer implements KVService {
             return;
         }
         final String id = request.getParameter("id=");
+        session.sendResponse(handleEntity(request,id));
+
+    }
+    public Response handleEntity(Request request, String id){
         if(id == null || id.isEmpty()){
-            session.sendResponse(new Response(Response.BAD_REQUEST, Response.EMPTY));
-            return;
+            return new Response(Response.BAD_REQUEST, Response.EMPTY);
         }
         switch (request.getMethod()){
             case Request.METHOD_GET:
-                try {
-                    final byte[] value = dao.get(id.getBytes());
-                    session.sendResponse(Response.ok(value));
-                } catch (NoSuchElementException e) {
-                    session.sendResponse(new Response(Response.NOT_FOUND, Response.EMPTY));
-                }
-                catch (Exception e){
-                    session.sendResponse(new Response(Response.INTERNAL_ERROR, e.toString().getBytes()));
-                }
-                break;
-
+                return getEntity(id);
             case Request.METHOD_PUT:
-                try {
-                    dao.upsert(id.getBytes(),request.getBody());
-                    session.sendResponse(new Response(Response.CREATED,Response.EMPTY));
-                }catch (Exception e){
-                    session.sendResponse(new Response(Response.INTERNAL_ERROR, e.toString().getBytes()));
-                }
-                break;
+                return putEntity(id,request);
             case Request.METHOD_DELETE:
-                try {
-                    dao.remove(id.getBytes());
-                    session.sendResponse(new Response(Response.ACCEPTED,Response.EMPTY));
-                }catch (Exception e){
-                    session.sendResponse(new Response(Response.INTERNAL_ERROR, e.toString().getBytes()));
-                }
-                break;
+                return deleteEntity(id);
             default:
-                    session.sendResponse(new Response(Response.METHOD_NOT_ALLOWED, Response.EMPTY));
+                return new Response(Response.METHOD_NOT_ALLOWED, Response.EMPTY);
         }
     }
-
+    private Response getEntity(String id){
+        try {
+            final byte[] value = dao.get(id.getBytes());
+            return Response.ok(value);
+        } catch (NoSuchElementException e) {
+            return new Response(Response.NOT_FOUND, Response.EMPTY);
+        }
+        catch (Exception e){
+            return new Response(Response.INTERNAL_ERROR, e.toString().getBytes());
+        }
+    }
+    private Response putEntity(String id,Request request){
+        try {
+            dao.upsert(id.getBytes(),request.getBody());
+            return new Response(Response.CREATED,Response.EMPTY);
+        }catch (Exception e){
+            return new Response(Response.INTERNAL_ERROR, e.toString().getBytes());
+        }
+    }
+    private Response deleteEntity(String id){
+        try {
+            dao.remove(id.getBytes());
+            return new Response(Response.ACCEPTED,Response.EMPTY);
+        }catch (Exception e){
+            return new Response(Response.INTERNAL_ERROR, e.toString().getBytes());
+        }
+    }
     private static HttpServerConfig from(final int port) {
         final AcceptorConfig ac = new AcceptorConfig();
         ac.port = port;
