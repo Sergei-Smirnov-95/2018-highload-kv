@@ -18,7 +18,7 @@ public class FileDao implements KVDao {
     }
 
     @NotNull
-    private File from(@NotNull final byte[] key){
+    private File from(@NotNull final byte[] key) {
 
         return new File(base, DatatypeConverter.printHexBinary(key));
     }
@@ -27,20 +27,20 @@ public class FileDao implements KVDao {
     @Override
     public byte[] get(@NotNull byte[] key) throws NoSuchElementException, IOException {
         final File file = from(key);
-        if (file.exists()){
+        if (file.exists()) {
             return Files.readAllBytes(file.toPath());
-        }else{
+        } else {
             throw new NoSuchElementException();
         }
     }
 
     @Override
     public void upsert(@NotNull byte[] key, @NotNull byte[] value) throws IOException {
-        Files.write(from(key).toPath(),value);
+        Files.write(from(key).toPath(), value);
     }
 
     @Override
-    public void remove(@NotNull byte[] key){
+    public void remove(@NotNull byte[] key) {
         from(key).delete();
     }
 

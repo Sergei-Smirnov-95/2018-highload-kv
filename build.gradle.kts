@@ -24,9 +24,6 @@ dependencies {
     // Annotations for better code documentation
     compile("com.intellij:annotations:12.0")
 
-    //nio
-    compile("ru.odnoklassniki:one-nio:1.0.2")
-
     //RocksDB
     compile("org.rocksdb:rocksdbjni:5.4.5")
 
