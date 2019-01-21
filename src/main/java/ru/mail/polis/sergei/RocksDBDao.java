@@ -42,15 +42,10 @@ public class RocksDBDao implements KVDao {
     @NotNull
     @Override
     public byte[] get(@NotNull byte[] key) throws NoSuchElementException {
-        final byte[] value = new byte[1024];
         try {
-
-            int err = db.get(key, value);
-            if (err == RocksDB.NOT_FOUND) {
+            byte[] value = db.get(key);
+            if (value == null) {
                 throw new NoSuchElementException();
-            }
-            if (err == 0) {
-                return new byte[0];
             }
             return value;
         } catch (RocksDBException ex) {

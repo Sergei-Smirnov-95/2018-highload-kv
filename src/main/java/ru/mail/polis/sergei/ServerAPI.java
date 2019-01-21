@@ -24,7 +24,7 @@ public class ServerAPI extends HttpServer {
 
     @Override
     public void handleDefault(final Request request, final HttpSession session) throws IOException {
-        if (!request.getPath().equals("/v0/entity")) {
+        if (!("/v0/entity").equals(request.getPath())) {
             session.sendResponse(new Response(Response.BAD_REQUEST, Response.EMPTY));
             return;
         }
